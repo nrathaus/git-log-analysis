@@ -2,7 +2,7 @@
 
 import sys
 import re
-from datetime import datetime
+import datetime
 
 import json
 
@@ -54,7 +54,7 @@ while not last_commit:
         raise ValueError("Missing Author/Date")
 
     author = author_match.group(1)
-    parsed_date = datetime.strptime(date_match.group(1), date_format)
+    parsed_date = datetime.datetime.strptime(date_match.group(1), date_format)
 
     if author not in authors:
         authors[author] = []
@@ -66,6 +66,16 @@ while not last_commit:
 
     pos += next_commit_match.span()[0] + 1
 
+    # if commits > 100000:
+    #     break
+
+
+def datetime_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
+
 
 # Done
-print(json.dumps(authors))
+with open(f"{filename}.json", "w", encoding="latin1") as file_handle:
+    json.dump(authors, fp=file_handle, default=datetime_handler)
