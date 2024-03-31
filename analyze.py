@@ -12,7 +12,7 @@ if len(sys.argv) < 2:
 
 filename = sys.argv[1]
 
-data = {}
+authors = {}
 
 log_data = ""
 with open(filename, "r", encoding="latin1") as file_handle:
@@ -21,9 +21,16 @@ with open(filename, "r", encoding="latin1") as file_handle:
 date_format = "%a %b %d %H:%M:%S %Y %z"
 
 pos = 0
+commits = 0
 last_commit = False
 while not last_commit:
-    print(f"Left {len(log_data[pos:]):,}")
+    commits += 1
+    print(
+        f"Left {len(log_data[pos:]):,}, "
+        f"commits: {commits:,}, "
+        f"len authors: {len(authors.keys()):,}                \r",
+        end="",
+    )
     if pos >= len(log_data):
         break
 
@@ -49,10 +56,10 @@ while not last_commit:
     author = author_match.group(1)
     parsed_date = datetime.strptime(date_match.group(1), date_format)
 
-    if author not in data:
-        data[author] = []
+    if author not in authors:
+        authors[author] = []
 
-    data[author].append(parsed_date)
+    authors[author].append(parsed_date)
 
     if last_commit:
         break
@@ -61,4 +68,4 @@ while not last_commit:
 
 
 # Done
-print(json.dumps(data))
+print(json.dumps(authors))
